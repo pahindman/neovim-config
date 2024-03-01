@@ -1,6 +1,6 @@
 *
 !/.config/nvim/init.vim
 !/.gitignore.d
-!/.gitignore.d/vim-config
+!/.gitignore.d/neovim-config
 !/README.md
 !/UNLICENSE
