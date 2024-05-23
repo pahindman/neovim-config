@@ -4,4 +4,5 @@ vim.opt.runtimepath:append('~/.vim/after')
 vim.o.packpath = vim.o.runtimepath
 vim.cmd('source ~/.vimrc')
 
+require('lspconfig').clangd.setup{}
 require('lspconfig').rust_analyzer.setup{}
