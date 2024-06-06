@@ -4,5 +4,12 @@ vim.opt.runtimepath:append('~/.vim/after')
 vim.o.packpath = vim.o.runtimepath
 vim.cmd('source ~/.vimrc')
 
-require('lspconfig').rust_analyzer.setup{}
-require('lspconfig').clangd.setup{}
+-- Try to load the lspconfig plugin.  If that works then set up the LSP
+-- servers, otherwise print a message.
+local lspconfig, _ = pcall(require, 'lspconfig')
+if lspconfig then
+  require("lspconfig").rust_analyzer.setup{}
+  require("lspconfig").clangd.setup{}
+else
+  print('init.lua: lspconfig not found')
+end
