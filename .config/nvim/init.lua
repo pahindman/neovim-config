@@ -9,6 +9,7 @@ vim.cmd('source ~/.vimrc')
 local lspconfig, _ = pcall(require, 'lspconfig')
 if lspconfig then
   require("lspconfig").clangd.setup{}
+  require("lspconfig").cmake.setup{}
   require("lspconfig").lua_ls.setup {
     on_init = function(client)
 	  if client.workspace_folders then
