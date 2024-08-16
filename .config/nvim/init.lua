@@ -11,6 +11,16 @@ if lspconfig then
   require("lspconfig").bashls.setup{}
   require("lspconfig").clangd.setup{}
   require("lspconfig").cmake.setup{}
+  vim.api.nvim_create_autocmd('FileType', {
+    pattern = "dts",
+    callback = function (ev)
+      vim.lsp.start({
+        name = 'dts-lsp',
+        cmd = {'dts-lsp'},
+        root_dir = vim.fs.dirname(vim.fs.find({'.git'}, { upward = true })[1]),
+      })
+    end
+  })
   require("lspconfig").lua_ls.setup {
     on_init = function(client)
 	  if client.workspace_folders then
