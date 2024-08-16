@@ -44,6 +44,7 @@ if lspconfig then
     }
   }
   require("lspconfig").rust_analyzer.setup{}
+  require("lspconfig").vimls.setup{}
 else
   print('init.lua: lspconfig not found')
 end
