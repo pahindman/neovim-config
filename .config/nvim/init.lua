@@ -8,6 +8,7 @@ vim.cmd('source ~/.vimrc')
 -- servers, otherwise print a message.
 local lspconfig, _ = pcall(require, 'lspconfig')
 if lspconfig then
+  require("lspconfig").bashls.setup{}
   require("lspconfig").clangd.setup{}
   require("lspconfig").cmake.setup{}
   require("lspconfig").lua_ls.setup {
