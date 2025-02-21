@@ -4,6 +4,13 @@ vim.opt.runtimepath:append('~/.vim/after')
 vim.o.packpath = vim.o.runtimepath
 vim.cmd('source ~/.vimrc')
 
+local codecompanion, _ = pcall(require, 'codecompanion')
+if codecompanion then
+  require("codecompanion").setup()
+else
+  print('init.lua: codecompanion not found')
+end
+
 -- Try to load the lspconfig plugin.  If that works then set up the LSP
 -- servers, otherwise print a message.
 local lspconfig, _ = pcall(require, 'lspconfig')
