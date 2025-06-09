@@ -4,6 +4,23 @@ vim.opt.runtimepath:append('~/.vim/after')
 vim.o.packpath = vim.o.runtimepath
 vim.cmd('source ~/.vimrc')
 
+require('gitsigns').setup {
+  signs = {
+    delete       = { show_count = true },
+  },
+  signs_staged = {
+    delete       = { show_count = true },
+  },
+  linehl     = true, -- Toggle with `:Gitsigns toggle_linehl`
+  word_diff  = true, -- Toggle with `:Gitsigns toggle_word_diff`
+  current_line_blame = true, -- Toggle with `:Gitsigns toggle_current_line_blame`
+  current_line_blame_opts = {
+    virt_text_pos = 'right_align', -- 'eol' | 'overlay' | 'right_align'
+    delay = 100,
+  },
+  current_line_blame_formatter = '<abbrev_sha>: <author>, <author_time:%R> - <summary>',
+}
+
 local codecompanion, _ = pcall(require, 'codecompanion')
 if codecompanion then
   require("codecompanion").setup()
