@@ -82,6 +82,9 @@ if lspconfig then
   }
   require("lspconfig").rust_analyzer.setup{}
   require("lspconfig").vimls.setup{}
+  -- set keymap for code-action
+  vim.keymap.set('n', '<space>ca', function()
+    vim.lsp.buf.code_action({apply=true}) end, {})
 else
   print('init.lua: lspconfig not found')
 end
