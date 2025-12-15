@@ -85,3 +85,8 @@ if lspconfig then
 else
   print('init.lua: lspconfig not found')
 end
+
+-- show vim diagnostics in virtual text
+vim.diagnostic.config({
+  virtual_text = true,
+})
