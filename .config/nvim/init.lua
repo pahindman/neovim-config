@@ -33,12 +33,12 @@ end
 -- servers, otherwise print a message.
 local lspconfig, _ = pcall(require, 'lspconfig')
 if lspconfig then
-  vim.lsp.config.bashls = {}
-  vim.lsp.enable({"bashls"})
-  vim.lsp.config.clangd = {}
-  vim.lsp.enable({"clangd"})
-  vim.lsp.config.cmake = {}
-  vim.lsp.enable({"cmake"})
+  vim.lsp.config("bashls", {})
+  vim.lsp.enable("bashls")
+  vim.lsp.config("clangd", {})
+  vim.lsp.enable("clangd")
+  vim.lsp.config("cmake", {})
+  vim.lsp.enable("cmake")
   vim.api.nvim_create_autocmd('FileType', {
     pattern = "dts",
     callback = function (ev)
@@ -49,7 +49,7 @@ if lspconfig then
       })
     end
   })
-  vim.lsp.config.lua_ls = {
+  vim.lsp.config("lua_ls", {
     on_init = function(client)
       local path = '.'
       if client.workspace_folders then
@@ -83,15 +83,12 @@ if lspconfig then
     settings = {
       Lua = {}
     }
-  }
-  vim.lsp.enable({"lua_ls"})
-  vim.lsp.config.rust_analyzer = {}
-  vim.lsp.enable({"rust_analyzer"})
-  vim.lsp.config.vimls = {}
-  vim.lsp.enable({"vimls"})
-  -- set keymap for code-action
-  vim.keymap.set('n', '<space>ca', function()
-    vim.lsp.buf.code_action({apply=true}) end, {})
+  })
+  vim.lsp.enable("lua_ls")
+  vim.lsp.config("rust_analyzer", {})
+  vim.lsp.enable("rust_analyzer")
+  vim.lsp.config("vimls", {})
+  vim.lsp.enable("vimls")
 else
   print('init.lua: lspconfig not found')
 end
