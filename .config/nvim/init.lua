@@ -4,6 +4,11 @@ vim.opt.runtimepath:append('~/.vim/after')
 vim.o.packpath = vim.o.runtimepath
 vim.cmd('source ~/.vimrc')
 
+require('orgmode').setup({
+	org_agenda_files = '~/org/**/*',
+	org_default_notes_file = '~/org/refile.org',
+})
+
 require('gitsigns').setup {
   signs = {
     delete       = { show_count = true },
