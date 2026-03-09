@@ -28,8 +28,72 @@ require('gitsigns').setup {
 
 local codecompanion, _ = pcall(require, 'codecompanion')
 if codecompanion then
-  vim.lsp.config.codecompanion = {}
-  vim.lsp.enable({"codecompanion"})
+  -- Choose default model from a list of preferred models. Fall back to first
+  -- available.
+  local function preferred_model_picker(preferred)
+	return function(self)
+	  if self == nil then
+		-- Debug:render() calls Adapter.schema.model.default() but doesn't pass
+		-- in `self`. Just return an empty string in this case.
+		return ''
+	  end
+
+	  local choices = self.schema.model.choices(self)
+
+	  for _, best in ipairs(preferred) do
+		for _, choice in ipairs(choices) do
+		  if choice:find(best, 1, true) then
+			return choice
+		  end
+		end
+	  end
+
+	  return choices[1]
+	end
+  end
+
+  require("codecompanion").setup({
+	strategies = {
+	  chat = { adapter = "ollama_chat" },
+	  inline = { adapter = "ollama_coding" },
+	},
+	-- asdf
+	adapters = {
+	  ollama_chat = function()
+		return require("codecompanion.adapters").extend("ollama", {
+		  env = {
+			  url = "http://silverstone.lan:11434",
+		  },
+		  schema = {
+			model = {
+			  default = preferred_model_picker(
+				{
+				  'llama3.2:1b',
+				}
+			  ),
+			},
+		  },
+		})
+	  end,
+	  ollama_coding = function()
+		return require("codecompanion.adapters").extend("ollama", {
+		  env = {
+			  url = "http://silverstone.lan:11434",
+		  },
+		  schema = {
+			model = {
+			  default = preferred_model_picker(
+				{
+				  'codellama:7b',
+				  'qwen2.5-coder:0.5b',
+				}
+			  ),
+			},
+		  },
+		})
+	  end,
+	},
+  })
 else
   print('init.lua: codecompanion not found')
 end
