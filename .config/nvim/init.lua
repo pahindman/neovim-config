@@ -1,163 +1,159 @@
 -- Pull in .vimrc and Vim plugins
-vim.opt.runtimepath:prepend('~/.vim')
-vim.opt.runtimepath:append('~/.vim/after')
+vim.opt.runtimepath:prepend("~/.vim")
+vim.opt.runtimepath:append("~/.vim/after")
 vim.o.packpath = vim.o.runtimepath
-vim.cmd('source ~/.vimrc')
+vim.cmd("source ~/.vimrc")
 
-require('orgmode').setup({
-	org_agenda_files = '~/org/**/*',
-	org_default_notes_file = '~/org/refile.org',
+require("orgmode").setup({
+	org_agenda_files = "~/org/**/*",
+	org_default_notes_file = "~/org/refile.org",
 })
 
-require('gitsigns').setup {
-  signs = {
-    delete       = { show_count = true },
-  },
-  signs_staged = {
-    delete       = { show_count = true },
-  },
-  linehl     = true, -- Toggle with `:Gitsigns toggle_linehl`
-  word_diff  = true, -- Toggle with `:Gitsigns toggle_word_diff`
-  current_line_blame = true, -- Toggle with `:Gitsigns toggle_current_line_blame`
-  current_line_blame_opts = {
-    virt_text_pos = 'right_align', -- 'eol' | 'overlay' | 'right_align'
-    delay = 100,
-  },
-  current_line_blame_formatter = '<abbrev_sha>: <author>, <author_time:%R> - <summary>',
-}
+require("gitsigns").setup({
+	signs = {
+		delete = { show_count = true },
+	},
+	signs_staged = {
+		delete = { show_count = true },
+	},
+	linehl = true, -- Toggle with `:Gitsigns toggle_linehl`
+	word_diff = true, -- Toggle with `:Gitsigns toggle_word_diff`
+	current_line_blame = true, -- Toggle with `:Gitsigns toggle_current_line_blame`
+	current_line_blame_opts = {
+		virt_text_pos = "right_align", -- 'eol' | 'overlay' | 'right_align'
+		delay = 100,
+	},
+	current_line_blame_formatter = "<abbrev_sha>: <author>, <author_time:%R> - <summary>",
+})
 
-local codecompanion, _ = pcall(require, 'codecompanion')
+local codecompanion, _ = pcall(require, "codecompanion")
 if codecompanion then
-  -- Choose default model from a list of preferred models. Fall back to first
-  -- available.
-  local function preferred_model_picker(preferred)
-	return function(self)
-	  if self == nil then
-		-- Debug:render() calls Adapter.schema.model.default() but doesn't pass
-		-- in `self`. Just return an empty string in this case.
-		return ''
-	  end
+	-- Choose default model from a list of preferred models. Fall back to first
+	-- available.
+	local function preferred_model_picker(preferred)
+		return function(self)
+			if self == nil then
+				-- Debug:render() calls Adapter.schema.model.default() but doesn't pass
+				-- in `self`. Just return an empty string in this case.
+				return ""
+			end
 
-	  local choices = self.schema.model.choices(self)
+			local choices = self.schema.model.choices(self)
 
-	  for _, best in ipairs(preferred) do
-		for _, choice in ipairs(choices) do
-		  if choice:find(best, 1, true) then
-			return choice
-		  end
+			for _, best in ipairs(preferred) do
+				for _, choice in ipairs(choices) do
+					if choice:find(best, 1, true) then
+						return choice
+					end
+				end
+			end
+
+			return choices[1]
 		end
-	  end
-
-	  return choices[1]
 	end
-  end
 
-  require("codecompanion").setup({
-	strategies = {
-	  chat = { adapter = "ollama_chat" },
-	  inline = { adapter = "ollama_coding" },
-	},
-	-- asdf
-	adapters = {
-	  ollama_chat = function()
-		return require("codecompanion.adapters").extend("ollama", {
-		  env = {
-			  url = "http://silverstone.lan:11434",
-		  },
-		  schema = {
-			model = {
-			  default = preferred_model_picker(
-				{
-				  'llama3.2:1b',
-				}
-			  ),
-			},
-		  },
-		})
-	  end,
-	  ollama_coding = function()
-		return require("codecompanion.adapters").extend("ollama", {
-		  env = {
-			  url = "http://silverstone.lan:11434",
-		  },
-		  schema = {
-			model = {
-			  default = preferred_model_picker(
-				{
-				  'codellama:7b',
-				  'qwen2.5-coder:0.5b',
-				}
-			  ),
-			},
-		  },
-		})
-	  end,
-	},
-  })
+	require("codecompanion").setup({
+		strategies = {
+			chat = { adapter = "ollama_chat" },
+			inline = { adapter = "ollama_coding" },
+		},
+		-- asdf
+		adapters = {
+			ollama_chat = function()
+				return require("codecompanion.adapters").extend("ollama", {
+					env = {
+						url = "http://silverstone.lan:11434",
+					},
+					schema = {
+						model = {
+							default = preferred_model_picker({
+								"llama3.2:1b",
+							}),
+						},
+					},
+				})
+			end,
+			ollama_coding = function()
+				return require("codecompanion.adapters").extend("ollama", {
+					env = {
+						url = "http://silverstone.lan:11434",
+					},
+					schema = {
+						model = {
+							default = preferred_model_picker({
+								"codellama:7b",
+								"qwen2.5-coder:0.5b",
+							}),
+						},
+					},
+				})
+			end,
+		},
+	})
 else
-  print('init.lua: codecompanion not found')
+	print("init.lua: codecompanion not found")
 end
 
 -- Try to load the lspconfig plugin.  If that works then set up the LSP
 -- servers, otherwise print a message.
-local lspconfig, _ = pcall(require, 'lspconfig')
+local lspconfig, _ = pcall(require, "lspconfig")
 if lspconfig then
-  vim.lsp.config("bashls", {})
-  vim.lsp.enable("bashls")
-  vim.lsp.config("clangd", {})
-  vim.lsp.enable("clangd")
-  vim.lsp.config("cmake", {})
-  vim.lsp.enable("cmake")
-  vim.lsp.config("dts_lsp", {})
-  vim.lsp.enable("dts_lsp")
-  vim.lsp.config("lua_ls", {
-    on_init = function(client)
-      local path = '.'
-      if client.workspace_folders then
-        path = client.workspace_folders[1].name
-      end
-      if vim.loop.fs_stat(path..'/.luarc.json') or vim.loop.fs_stat(path..'/.luarc.jsonc') then
-        return
-      end
+	vim.lsp.config("bashls", {})
+	vim.lsp.enable("bashls")
+	vim.lsp.config("clangd", {})
+	vim.lsp.enable("clangd")
+	vim.lsp.config("cmake", {})
+	vim.lsp.enable("cmake")
+	vim.lsp.config("dts_lsp", {})
+	vim.lsp.enable("dts_lsp")
+	vim.lsp.config("lua_ls", {
+		on_init = function(client)
+			local path = "."
+			if client.workspace_folders then
+				path = client.workspace_folders[1].name
+			end
+			if vim.loop.fs_stat(path .. "/.luarc.json") or vim.loop.fs_stat(path .. "/.luarc.jsonc") then
+				return
+			end
 
-      client.config.settings.Lua = vim.tbl_deep_extend('force', client.config.settings.Lua, {
-        runtime = {
-          -- Tell the language server which version of Lua you're using
-          -- (most likely LuaJIT in the case of Neovim)
-          version = 'LuaJIT'
-        },
-        -- Make the server aware of Neovim runtime files
-        workspace = {
-          checkThirdParty = false,
-          library = {
-            vim.env.VIMRUNTIME,
-            "${3rd}/luv/library"
-            -- Depending on the usage, you might want to add additional paths here.
-            -- "${3rd}/luv/library"
-            -- "${3rd}/busted/library",
-          }
-          -- or pull in all of 'runtimepath'. NOTE: this is a lot slower
-          -- library = vim.api.nvim_get_runtime_file("", true)
-        }
-      })
-    end,
-    settings = {
-      Lua = {}
-    }
-  })
-  vim.lsp.enable("lua_ls")
-  vim.lsp.config("rust_analyzer", {})
-  vim.lsp.enable("rust_analyzer")
-  vim.lsp.config("vimls", {})
-  vim.lsp.enable("vimls")
+			client.config.settings.Lua = vim.tbl_deep_extend("force", client.config.settings.Lua, {
+				runtime = {
+					-- Tell the language server which version of Lua you're using
+					-- (most likely LuaJIT in the case of Neovim)
+					version = "LuaJIT",
+				},
+				-- Make the server aware of Neovim runtime files
+				workspace = {
+					checkThirdParty = false,
+					library = {
+						vim.env.VIMRUNTIME,
+						"${3rd}/luv/library",
+						-- Depending on the usage, you might want to add additional paths here.
+						-- "${3rd}/luv/library"
+						-- "${3rd}/busted/library",
+					},
+					-- or pull in all of 'runtimepath'. NOTE: this is a lot slower
+					-- library = vim.api.nvim_get_runtime_file("", true)
+				},
+			})
+		end,
+		settings = {
+			Lua = {},
+		},
+	})
+	vim.lsp.enable("lua_ls")
+	vim.lsp.config("rust_analyzer", {})
+	vim.lsp.enable("rust_analyzer")
+	vim.lsp.config("vimls", {})
+	vim.lsp.enable("vimls")
 else
-  print('init.lua: lspconfig not found')
+	print("init.lua: lspconfig not found")
 end
 
 -- show vim diagnostics in virtual text
 vim.diagnostic.config({
-  virtual_text = true,
-  virtual_lines = {
-	current_line = true,
-  },
+	virtual_text = true,
+	virtual_lines = {
+		current_line = true,
+	},
 })
